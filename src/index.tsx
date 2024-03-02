@@ -53,6 +53,10 @@ export interface ReactDiffViewerProps {
     lineId: string,
     event: React.MouseEvent<HTMLTableCellElement>,
   ) => void;
+
+  postDiffCallback?: (
+    computedLineInformation: ComputedLineInformation
+  ) => ComputedLineInformation;
   // render gutter
   renderGutter?: (data: {
     lineNumber: number;
@@ -534,8 +538,11 @@ class DiffViewer extends React.Component<
       disableWordDiff,
       compareMethod,
       linesOffset,
+      postDiffCallback
     } = this.props;
     const { lineInformation, diffLines } = computeLineInformation(
+
+    const computedLineInformation: ComputedLineInformation = computeLineInformation(
       oldValue,
       newValue,
       disableWordDiff,
@@ -543,7 +550,10 @@ class DiffViewer extends React.Component<
       linesOffset,
       this.props.alwaysShowLines
     );
+    
+    postDiffCallback && postDiffCallback(computedLineInformation);
 
+    const { lineInformation, diffLines } = computedLineInformation;
     const extraLines =
       this.props.extraLinesSurroundingDiff < 0
         ? 0
